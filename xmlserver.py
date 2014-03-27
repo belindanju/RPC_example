@@ -15,26 +15,33 @@ class RequestHandler(SimpleXMLRPCRequestHandler):
 
 
 class MyXMLServer():
-#    def __init__(self):
+    def __init__(self, name):
+        self.name = name 
            
-    def lookup(self):
-            return 'dns lookup'
+    def lookup(self):  # an instance function takes no args, but return a string
+        return "my name %s" % self.name
 
-    def adder_function(self, x, y):
+    def add(self, x, y):  # an instance function takes args, returns integer
         return x + y
 
 
+# module level function
 def substract(x,y):
         return x - y 
 
 def hello(name):
         return "hello %s" % name
 
-server = SimpleXMLRPCServer((server_ip, server_port), requestHandler=RequestHandler)
-server.register_introspection_functions()
-                                                                                                   
-#server.register_function(self.lookup(), 'lookup')
-server.register_instance(MyXMLServer())
-server.register_function(substract, 'sub')
-server.register_function(hello, 'hello')
-server.serve_forever()
+if __name__ == '__main__':
+    # start a XMLRPCServer that could handle RPC requests
+    server = SimpleXMLRPCServer((server_ip, server_port), requestHandler=RequestHandler)
+    server.register_introspection_functions()  # important! 
+                      
+    # register instances, all the functions inside is available
+    server.register_instance(MyXMLServer())
+    
+    # register functions
+    server.register_function(substract, 'sub')  # expose substract as function sub
+    server.register_function(hello, 'hello')
+    
+    server.serve_forever()  # start the server 
